@@ -1,10 +1,12 @@
 [project]
-name = "config-convert"
-version = "0.1.0"
+dependencies = [
+  "json5>=0.12.1",
+  "dnspython>=2.7.0",
+  "aiohttp>=3.8.0",
+  "requests>=2.32.5",
+]
 description = "Add your description here"
+name = "config-convert"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = [
-    "json5>=0.12.1",
-    "requests>=2.33.1",
-]
+version = "0.1.0"

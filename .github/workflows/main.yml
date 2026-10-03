@@ -16,9 +16,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Set up Git
         run: |
@@ -32,7 +32,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run config converting script
-        run: python src/main.py
+        run: python src/main.py --dns
 
       - name: Checkout Pages repository
         uses: actions/checkout@v4
@@ -45,9 +45,10 @@ jobs:
         run: |
           mkdir -p pages-repo/other-assets
           cp assets/final_config.json pages-repo/other-assets/ds-config.json
+          cp assets/final_config_dns.json pages-repo/other-assets/ds-config-dns.json
           cd pages-repo
           git checkout master || git checkout -b master
-          git add other-assets/ds-config.json || true
-          git commit -m "Update ds-config.json to new location for permanent migration solution" || echo "No changes to commit"
+          git add other-assets/ds-config.json other-assets/ds-config-dns.json || true
+          git commit -m "Update ds-config.json / ds-config-dns.json to new location for permanent migration solution" || echo "No changes to commit"
           git pull origin master --no-edit
           git push origin master

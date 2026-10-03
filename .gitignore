@@ -14,3 +14,6 @@ venv.bak/
 .idea/
 .vscode/
 *.swp
+.workbuddy-ai/
+# 可信 DNS 解析产出的第二份配置（含本机网络相关的 IP，不入库）
+assets/final_config_dns.json

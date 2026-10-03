@@ -1,14 +1,14 @@
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar, dataclass, field
 from logging import getLogger
+
+from json5 import dump, load, loads
 from requests import get
-from json5 import loads, load
-from json import dump
 
-
+from ExtendedDict import ExtendedDict
 from header import (
+    GITHUB_MIRRORS,
     JSON5Object,
     RawSheasCealerConfig,
-    GITHUB_MIRRORS,
     skip_IPv6,
 )
 from utils import (
@@ -16,11 +16,11 @@ from utils import (
     show_raw_text_for_debugging,
     sort_json_object,
 )
-from ExtendedDict import ExtendedDict
 
 __all__ = [
     "GithubConfig",
     "LocalConfig",
+    "MemoryConfig",
     "RemoteConfig",
     "SheasCealerConfig",
 ]
@@ -57,7 +57,9 @@ class Config:
 
     def save(self, fn: str):
         sorted_config = sort_json_object(self.config)
-        with open(fn, "w") as f:
+        # 统一用 json5 序列化（JSON5 是 JSON 超集，dev-sidecar 按 JSON5 解析）。
+        # 显式指定 utf-8：否则会跟随 Windows 区域编码（cp936）把中文写坏。
+        with open(fn, "w", encoding="utf-8") as f:
             dump(sorted_config, f, ensure_ascii=False, indent=2)
         logger.info(f"Finish saving {self.name} config to {fn}")
 
@@ -99,7 +101,6 @@ class Config:
                     show_raw_text_for_debugging(self.name, r.text, logger)
                 continue
             else:
-
                 config_text = r.text
                 try:
                     result: JSON5Object = loads(config_text)
@@ -133,7 +134,7 @@ class SheasCealerConfig(Config):
 
         # 解析 raw_config
         self.config = self.__convert()
-        logger.info(f"Finish converting Sheas Cealer config to Dev-Sidecar config")
+        logger.info("Finish converting Sheas Cealer config to Dev-Sidecar config")
         super().__post_init__()
 
     def __convert(self) -> ExtendedDict:
