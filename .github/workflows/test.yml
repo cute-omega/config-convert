@@ -38,11 +38,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run config converting script in debug mode
-        run: python src/main.py --debug
+        run: python src/main.py --debug --dns
 
       - name: Upload generated config to check
         uses: actions/upload-artifact@v4.4.0
         with:
-          path: "assets/final_config.json"
-          name: "final_config.json"
+          path: |
+            assets/final_config.json
+            assets/final_config_dns.json
+          name: "final_config"
           if-no-files-found: error

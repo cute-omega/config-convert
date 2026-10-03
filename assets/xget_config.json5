@@ -1,0 +1,655 @@
+// Xget 全平台加速规则（独立文件，默认不参与构建）
+//
+// 许可证：仅以 URL 前缀规则引用外部 Xget 实例（AGPL-3.0），未并入其源码。
+// 启用：python src/main.py --xget   （不加该参数则完全不加载本文件）
+// 结构：只含 server.intercepts，合并时不会覆盖 app.metaInfo 等其它字段。
+
+{
+  server: {
+    intercepts: {
+      // ========== Xget 全平台加速（${XGET_DOMAIN}, AGPL-3.0）==========
+      // 对照 xget/src/config/platform-catalog.js，覆盖全部 84 个平台键
+      // 路径前缀规则：platformKey.replace(/-/g, '/') → 如 pypi-files → /pypi/files/
+
+      // ---------- 代码托管平台（/gh, /gist, /gl, /gitea, /codeberg, /sf, /aosp）----------
+
+      "github.com": {
+        // Homebrew git 操作（homebrew 平台 → github.com/Homebrew）
+        "^/Homebrew/.*$": {
+          replace: "^/Homebrew/(.*)$",
+          proxy: "https://${XGET_DOMAIN}/homebrew/$1",
+          desc: "Homebrew git → Xget /homebrew（upstream: github.com/Homebrew）",
+        },
+        "^(/[^/]+){2}/releases/download/.*$": {
+          proxy: "https://${XGET_DOMAIN}/gh${p[0]}",
+          desc: "GitHub Release 下载 → Xget /gh",
+        },
+        "^(/[^/]+){2}/releases/latest/download/.*$": {
+          proxy: "https://${XGET_DOMAIN}/gh${p[0]}",
+          desc: "GitHub latest release 资产 → Xget /gh",
+        },
+        "^(/[^/]+){2,}/archive/.*\\.(zip|tar\\.gz)$": {
+          proxy: "https://${XGET_DOMAIN}/gh${p[0]}",
+          desc: "GitHub archive 源码包 → Xget /gh",
+        },
+        "^(/[^/]+){2,}/archive/refs/.*\\.(zip|tar\\.gz|tar\\.bz2|tar\\.xz)$": {
+          proxy: "https://${XGET_DOMAIN}/gh${p[0]}",
+          desc: "GitHub archive/refs 源码包 → Xget /gh",
+        },
+      },
+
+      "gist.github.com": {
+        "^/[^/]+/[a-f0-9]+/raw/.*$": {
+          proxy: "https://${XGET_DOMAIN}/gist${p[0]}",
+          desc: "Gist raw → Xget /gist",
+        },
+        "^/[^/]+/[a-f0-9]+/archive/.*$": {
+          proxy: "https://${XGET_DOMAIN}/gist${p[0]}",
+          desc: "Gist archive → Xget /gist",
+        },
+      },
+
+      "raw.githubusercontent.com": {
+        "^/([^/]+)/([^/]+)/(.+)$": {
+          replace: "^/([^/]+)/([^/]+)/(.+)$",
+          proxy: "https://${XGET_DOMAIN}/gh/$1/$2/raw/$3",
+          desc: "GitHub raw → Xget /gh/{owner}/{repo}/raw/...",
+        },
+      },
+
+      "gitlab.com": {
+        "^(/[^/]+){2,}/-/archive/.*$": {
+          proxy: "https://${XGET_DOMAIN}/gl${p[0]}",
+          desc: "GitLab archive → Xget /gl",
+        },
+      },
+
+      "gitea.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/gitea${p[0]}",
+          desc: "Gitea → Xget /gitea",
+        },
+      },
+
+      "codeberg.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/codeberg${p[0]}",
+          desc: "Codeberg → Xget /codeberg",
+        },
+      },
+
+      "sourceforge.net": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/sf${p[0]}",
+          desc: "SourceForge → Xget /sf",
+        },
+      },
+
+      "android.googlesource.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/aosp${p[0]}",
+          desc: "AOSP → Xget /aosp",
+        },
+      },
+
+      // ---------- AI 模型 / 数据集（/hf, /civitai）----------
+
+      "huggingface.co": {
+        "^/.*/resolve/.*$": {
+          proxy: "https://${XGET_DOMAIN}/hf${p[0]}",
+          desc: "HF resolve 模型/数据集文件 → Xget /hf",
+        },
+        "^/datasets/.*/resolve/.*$": {
+          proxy: "https://${XGET_DOMAIN}/hf${p[0]}",
+          desc: "HF datasets resolve → Xget /hf",
+        },
+      },
+
+      "civitai.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/civitai${p[0]}",
+          desc: "CivitAI → Xget /civitai",
+        },
+      },
+
+      // ---------- 包管理器 / 软件源 ----------
+
+      // npm（/npm）
+      "registry.npmjs.org": {
+        "^/.*\\.tgz$": {
+          proxy: "https://${XGET_DOMAIN}/npm${p[0]}",
+          desc: "npm tarball → Xget /npm",
+        },
+        "^/[^/]+$": {
+          proxy: "https://${XGET_DOMAIN}/npm${p[0]}",
+          desc: "npm 包元数据 → Xget /npm",
+        },
+      },
+
+      // PyPI（/pypi + /pypi/files）
+      "pypi.org": {
+        "^/packages/.*$": {
+          proxy: "https://${XGET_DOMAIN}/pypi${p[0]}",
+          desc: "PyPI packages → Xget /pypi",
+        },
+      },
+      "files.pythonhosted.org": {
+        "^/packages/.*$": {
+          proxy: "https://${XGET_DOMAIN}/pypi/files${p[0]}",
+          desc: "PyPI 文件 CDN → Xget /pypi/files",
+        },
+      },
+
+      // Conda（/conda 默认通道 + /conda/community 社区通道）
+      "repo.anaconda.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/conda${p[0]}",
+          desc: "Conda 默认通道 → Xget /conda",
+        },
+      },
+      "conda.anaconda.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/conda/community${p[0]}",
+          desc: "Conda 社区通道 → Xget /conda/community",
+        },
+      },
+
+      // Maven Central（/maven）
+      "repo1.maven.org": {
+        "^/maven2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/maven${p[0]}",
+          desc: "Maven Central → Xget /maven",
+        },
+      },
+
+      // Apache（/apache）
+      "downloads.apache.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/apache${p[0]}",
+          desc: "Apache downloads → Xget /apache",
+        },
+      },
+
+      // Gradle plugins（/gradle）
+      "plugins.gradle.org": {
+        "^/m2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/gradle${p[0]}",
+          desc: "Gradle plugins → Xget /gradle",
+        },
+      },
+
+      // Homebrew API（/homebrew/api, upstream: formulae.brew.sh/api）
+      // 需 replace 剥离 /api 前缀，因 upstream base 已含 /api
+      "formulae.brew.sh": {
+        "^/api/.*$": {
+          replace: "^/api/(.*)$",
+          proxy: "https://${XGET_DOMAIN}/homebrew/api/$1",
+          desc: "Homebrew API → Xget /homebrew/api（upstream: formulae.brew.sh/api）",
+        },
+      },
+
+      // RubyGems（/rubygems）
+      "rubygems.org": {
+        "^/gems/.*$": {
+          proxy: "https://${XGET_DOMAIN}/rubygems${p[0]}",
+          desc: "RubyGems gems → Xget /rubygems",
+        },
+        "^/api/.*$": {
+          proxy: "https://${XGET_DOMAIN}/rubygems${p[0]}",
+          desc: "RubyGems API → Xget /rubygems",
+        },
+      },
+
+      // CRAN（/cran）
+      "cran.r-project.org": {
+        "^/src/contrib/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cran${p[0]}",
+          desc: "CRAN contrib → Xget /cran",
+        },
+        "^/web/packages/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cran${p[0]}",
+          desc: "CRAN web packages → Xget /cran",
+        },
+      },
+
+      // CPAN（/cpan）
+      "www.cpan.org": {
+        "^/modules/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cpan${p[0]}",
+          desc: "CPAN modules → Xget /cpan",
+        },
+        "^/authors/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cpan${p[0]}",
+          desc: "CPAN authors → Xget /cpan",
+        },
+      },
+
+      // CTAN（/ctan）
+      "tug.ctan.org": {
+        "^/tex-archive/.*$": {
+          proxy: "https://${XGET_DOMAIN}/ctan${p[0]}",
+          desc: "CTAN tex-archive → Xget /ctan",
+        },
+      },
+
+      // Go module proxy（/golang）
+      "proxy.golang.org": {
+        "^/.*$": {
+          proxy: "https://${XGET_DOMAIN}/golang${p[0]}",
+          desc: "Go module proxy → Xget /golang",
+        },
+      },
+
+      // NuGet（/nuget）
+      "api.nuget.org": {
+        "^/v3-flatcontainer/.*$": {
+          proxy: "https://${XGET_DOMAIN}/nuget${p[0]}",
+          desc: "NuGet flatcontainer → Xget /nuget",
+        },
+      },
+
+      // crates.io（/crates, xget 自动补 /api/v1/crates 前缀）
+      "crates.io": {
+        "^/api/v1/crates/.*/download$": {
+          proxy: "https://${XGET_DOMAIN}/crates${p[0]}",
+          desc: "crates 下载 → Xget /crates",
+        },
+      },
+
+      // Packagist（/packagist）
+      "repo.packagist.org": {
+        "^/p2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/packagist${p[0]}",
+          desc: "Packagist p2 → Xget /packagist",
+        },
+        "^/packages/.*$": {
+          proxy: "https://${XGET_DOMAIN}/packagist${p[0]}",
+          desc: "Packagist packages → Xget /packagist",
+        },
+      },
+
+      // Flathub（/flathub）
+      "dl.flathub.org": {
+        "^/repo/.*$": {
+          proxy: "https://${XGET_DOMAIN}/flathub${p[0]}",
+          desc: "Flathub repo → Xget /flathub",
+        },
+      },
+
+      // ---------- Linux 发行版仓库 ----------
+
+      "deb.debian.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/debian${p[0]}",
+          desc: "Debian repo → Xget /debian",
+        },
+      },
+      "archive.ubuntu.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ubuntu${p[0]}",
+          desc: "Ubuntu repo → Xget /ubuntu",
+        },
+      },
+      "dl.fedoraproject.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/fedora${p[0]}",
+          desc: "Fedora repo → Xget /fedora",
+        },
+      },
+      "download.rockylinux.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/rocky${p[0]}",
+          desc: "Rocky Linux repo → Xget /rocky",
+        },
+      },
+      "download.opensuse.org": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/opensuse${p[0]}",
+          desc: "openSUSE repo → Xget /opensuse",
+        },
+      },
+      "geo.mirror.pkgbuild.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/arch${p[0]}",
+          desc: "Arch Linux repo → Xget /arch",
+        },
+      },
+
+      // ---------- 学术 / 应用分发 ----------
+
+      // arXiv（/arxiv）
+      "arxiv.org": {
+        "^/(pdf|e-print)/.*$": {
+          proxy: "https://${XGET_DOMAIN}/arxiv${p[0]}",
+          desc: "arXiv PDF/源码 → Xget /arxiv",
+        },
+      },
+
+      // F-Droid（/fdroid）
+      "f-droid.org": {
+        "^/repo/.*$": {
+          proxy: "https://${XGET_DOMAIN}/fdroid${p[0]}",
+          desc: "F-Droid repo → Xget /fdroid",
+        },
+        "^/api/.*$": {
+          proxy: "https://${XGET_DOMAIN}/fdroid${p[0]}",
+          desc: "F-Droid API → Xget /fdroid",
+        },
+      },
+
+      // Jenkins（/jenkins, xget 自动补 /current 前缀）
+      "updates.jenkins.io": {
+        "^/download/.*$": {
+          proxy: "https://${XGET_DOMAIN}/jenkins${p[0]}",
+          desc: "Jenkins 插件下载 → Xget /jenkins",
+        },
+        "^/current/.*$": {
+          proxy: "https://${XGET_DOMAIN}/jenkins${p[0]}",
+          desc: "Jenkins current → Xget /jenkins",
+        },
+        "^/experimental/.*$": {
+          proxy: "https://${XGET_DOMAIN}/jenkins${p[0]}",
+          desc: "Jenkins experimental → Xget /jenkins",
+        },
+        "^/war/.*$": {
+          proxy: "https://${XGET_DOMAIN}/jenkins${p[0]}",
+          desc: "Jenkins war → Xget /jenkins",
+        },
+        "^/update-center.*\\.json$": {
+          proxy: "https://${XGET_DOMAIN}/jenkins${p[0]}",
+          desc: "Jenkins update-center → Xget /jenkins",
+        },
+      },
+
+      // ---------- 容器镜像仓库（/cr/）----------
+      // Docker Registry API v2 路径统一以 /v2/ 开头
+
+      // GHCR：先匹配 Homebrew bottles，再匹配通用容器
+      "ghcr.io": {
+        "^/v2/homebrew/.*$": {
+          proxy: "https://${XGET_DOMAIN}/homebrew/bottles${p[0]}",
+          desc: "Homebrew bottles → Xget /homebrew/bottles",
+        },
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/ghcr${p[0]}",
+          desc: "GHCR → Xget /cr/ghcr",
+        },
+      },
+
+      "registry-1.docker.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/docker${p[0]}",
+          desc: "Docker Hub → Xget /cr/docker",
+        },
+      },
+      "quay.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/quay${p[0]}",
+          desc: "Quay → Xget /cr/quay",
+        },
+      },
+      "gcr.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/gcr${p[0]}",
+          desc: "GCR → Xget /cr/gcr",
+        },
+      },
+      "mcr.microsoft.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/mcr${p[0]}",
+          desc: "MCR → Xget /cr/mcr",
+        },
+      },
+      "public.ecr.aws": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/ecr${p[0]}",
+          desc: "AWS Public ECR → Xget /cr/ecr",
+        },
+      },
+      "registry.gitlab.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/gitlab${p[0]}",
+          desc: "GitLab Registry → Xget /cr/gitlab",
+        },
+      },
+      "registry.redhat.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/redhat${p[0]}",
+          desc: "Red Hat Registry → Xget /cr/redhat",
+        },
+      },
+      "container-registry.oracle.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/oracle${p[0]}",
+          desc: "Oracle Registry → Xget /cr/oracle",
+        },
+      },
+      "docker.cloudsmith.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/cloudsmith${p[0]}",
+          desc: "Cloudsmith → Xget /cr/cloudsmith",
+        },
+      },
+      "registry.digitalocean.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/digitalocean${p[0]}",
+          desc: "DigitalOcean Registry → Xget /cr/digitalocean",
+        },
+      },
+      "projects.registry.vmware.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/vmware${p[0]}",
+          desc: "VMware Registry → Xget /cr/vmware",
+        },
+      },
+      "registry.k8s.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/k8s${p[0]}",
+          desc: "K8s Registry → Xget /cr/k8s",
+        },
+      },
+      "registry.heroku.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/heroku${p[0]}",
+          desc: "Heroku Registry → Xget /cr/heroku",
+        },
+      },
+      "registry.suse.com": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/suse${p[0]}",
+          desc: "SUSE Registry → Xget /cr/suse",
+        },
+      },
+      "registry.opensuse.org": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/opensuse${p[0]}",
+          desc: "openSUSE Registry → Xget /cr/opensuse",
+        },
+      },
+      "registry.gitpod.io": {
+        "^/v2/.*$": {
+          proxy: "https://${XGET_DOMAIN}/cr/gitpod${p[0]}",
+          desc: "Gitpod Registry → Xget /cr/gitpod",
+        },
+      },
+
+      // ---------- AI 推理服务（/ip/）----------
+      // 全部 API 路径代理
+
+      "api.openai.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/openai${p[0]}",
+          desc: "OpenAI API → Xget /ip/openai",
+        },
+      },
+      "api.anthropic.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/anthropic${p[0]}",
+          desc: "Anthropic API → Xget /ip/anthropic",
+        },
+      },
+      "generativelanguage.googleapis.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/gemini${p[0]}",
+          desc: "Gemini API → Xget /ip/gemini",
+        },
+      },
+      "aiplatform.googleapis.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/vertexai${p[0]}",
+          desc: "Vertex AI API → Xget /ip/vertexai",
+        },
+      },
+      "api.cohere.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/cohere${p[0]}",
+          desc: "Cohere API → Xget /ip/cohere",
+        },
+      },
+      "api.mistral.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/mistralai${p[0]}",
+          desc: "Mistral AI API → Xget /ip/mistralai",
+        },
+      },
+      "api.x.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/xai${p[0]}",
+          desc: "xAI API → Xget /ip/xai",
+        },
+      },
+      "models.github.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/githubmodels${p[0]}",
+          desc: "GitHub Models API → Xget /ip/githubmodels",
+        },
+      },
+      "integrate.api.nvidia.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/nvidiaapi${p[0]}",
+          desc: "NVIDIA API → Xget /ip/nvidiaapi",
+        },
+      },
+      "api.perplexity.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/perplexity${p[0]}",
+          desc: "Perplexity API → Xget /ip/perplexity",
+        },
+      },
+      "api.braintrust.dev": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/braintrust${p[0]}",
+          desc: "Braintrust API → Xget /ip/braintrust",
+        },
+      },
+      "api.groq.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/groq${p[0]}",
+          desc: "Groq API → Xget /ip/groq",
+        },
+      },
+      "api.cerebras.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/cerebras${p[0]}",
+          desc: "Cerebras API → Xget /ip/cerebras",
+        },
+      },
+      "api.sambanova.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/sambanova${p[0]}",
+          desc: "SambaNova API → Xget /ip/sambanova",
+        },
+      },
+      "api.siray.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/siray${p[0]}",
+          desc: "Siray API → Xget /ip/siray",
+        },
+      },
+      "router.huggingface.co": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/huggingface${p[0]}",
+          desc: "HF Inference API → Xget /ip/huggingface",
+        },
+      },
+      "api.together.xyz": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/together${p[0]}",
+          desc: "Together AI API → Xget /ip/together",
+        },
+      },
+      "api.replicate.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/replicate${p[0]}",
+          desc: "Replicate API → Xget /ip/replicate",
+        },
+      },
+      "api.fireworks.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/fireworks${p[0]}",
+          desc: "Fireworks AI API → Xget /ip/fireworks",
+        },
+      },
+      "api.studio.nebius.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/nebius${p[0]}",
+          desc: "Nebius API → Xget /ip/nebius",
+        },
+      },
+      "api.jina.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/jina${p[0]}",
+          desc: "Jina AI API → Xget /ip/jina",
+        },
+      },
+      "api.voyageai.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/voyageai${p[0]}",
+          desc: "Voyage AI API → Xget /ip/voyageai",
+        },
+      },
+      "fal.run": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/falai${p[0]}",
+          desc: "Fal AI API → Xget /ip/falai",
+        },
+      },
+      "api.novita.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/novita${p[0]}",
+          desc: "Novita API → Xget /ip/novita",
+        },
+      },
+      "ai.burncloud.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/burncloud${p[0]}",
+          desc: "Burncloud API → Xget /ip/burncloud",
+        },
+      },
+      "openrouter.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/openrouter${p[0]}",
+          desc: "OpenRouter API → Xget /ip/openrouter",
+        },
+      },
+      "api.poe.com": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/poe${p[0]}",
+          desc: "Poe API → Xget /ip/poe",
+        },
+      },
+      "api.featherless.ai": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/featherlessai${p[0]}",
+          desc: "Featherless AI API → Xget /ip/featherlessai",
+        },
+      },
+      "api.hyperbolic.xyz": {
+        ".*": {
+          proxy: "https://${XGET_DOMAIN}/ip/hyperbolic${p[0]}",
+          desc: "Hyperbolic API → Xget /ip/hyperbolic",
+        },
+      },
+    },
+  },
+}
