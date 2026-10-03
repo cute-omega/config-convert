@@ -6,12 +6,16 @@
 
 本仓库产出**两份配置**，按需选择其一填入dev-sidecar的个人远程配置，然后点击“更新远程配置”以立即生效。之后dev-sidecar会在每次启动时自动更新配置。
 
-| 配置 | 地址 | 说明 |
+| 配置 | metaInfo.id | 地址 |
 | --- | --- | --- |
-| 标准版 | <https://cute-omega.github.io/other-assets/ds-config.json> | 只使用上游配置提供的 IP |
-| DNS 版 | <https://cute-omega.github.io/other-assets/ds-config-dns.json> | 额外把 `server.intercepts` 中域名经**可信 DNS** 解析得到的 IP 补进 `server.preSetIpList` |
+| 标准版 | `io.github.cute-omega` | <https://cute-omega.github.io/other-assets/ds-config.json> |
+| DNS 版 | `io.github.cute-omega.dns` | <https://cute-omega.github.io/other-assets/ds-config-dns.json> |
 
-两份配置**只有 `server.preSetIpList` 不同**，其余内容完全一致。DNS 版只**补充**缺失的条目，不会覆盖上游已提供的 IP。
+标准版只使用上游配置提供的 IP；DNS 版额外把 `server.intercepts` 中域名经**可信 DNS** 解析得到的 IP
+补进 `server.preSetIpList`。两份配置**只有 `metaInfo.id` 与 `server.preSetIpList` 不同**，其余内容完全一致；
+DNS 版只**补充**缺失的条目，不会覆盖上游已提供的 IP。
+
+两者的 `metaInfo.id` 刻意不同，dev-sidecar 会视作两个独立配置，可以分别加载、互不覆盖。
 
 > ⚠️ DNS 版必须依赖**无 DNS 污染的环境**解析，因此**默认不生成**，只在 CI 上显式传 `--dns` 时才产出。
 > 被墙域名在受污染的网络上会被解析到随机假 IP，所以本地运行**不要**加 `--dns`，也不要用中国大陆网络自行重建该文件。

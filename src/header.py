@@ -9,6 +9,7 @@ __all__ = [
     "JSONValue",
     "RawSheasCealerConfig",
     "TRUSTED_DNS_SERVERS",
+    "dns_config_id",
     "dns_query_timeout",
     "excluded_domains_path",
     "final_config_dns_path",
@@ -60,6 +61,10 @@ TRUSTED_DNS_SERVERS = [
 
 # 单次 DNS 查询超时（秒）
 dns_query_timeout = 5.0
+
+# DNS 版产物的 metaInfo.id。必须与标准版（assets/manual_config.json5 里的 io.github.cute-omega）
+# 不同，否则 dev-sidecar 会把两份配置当成同一个而互相覆盖。
+dns_config_id = "io.github.cute-omega.dns"
 
 excluded_domains_path = abspath(
     join(dirname(__file__), "..", "assets", "excluded_domains.json5")

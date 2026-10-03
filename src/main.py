@@ -15,6 +15,7 @@ from Config import (
 )
 from header import (
     TRUSTED_DNS_SERVERS,
+    dns_config_id,
     excluded_domains_path,
     final_config_dns_path,
     final_config_path,
@@ -117,6 +118,8 @@ def main():
         return
 
     dns_config = deepcopy(final_config)
+    # 两份配置必须有不同的 metaInfo.id，否则 dev-sidecar 会当成同一个配置互相覆盖
+    dns_config["app"]["metaInfo"]["id"] = dns_config_id
     try:
         total, added = asyncio.run(
             resolve_pre_set_ip_list(dns_config, TRUSTED_DNS_SERVERS)
