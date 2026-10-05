@@ -9,6 +9,7 @@ from header import (
     GITHUB_MIRRORS,
     JSON5Object,
     RawSheasCealerConfig,
+    USER_AGENT,
     skip_IPv6,
 )
 from utils import (
@@ -89,7 +90,14 @@ class Config:
             r = None
             try:
                 logger.info(f"Trying to download {self.name} config from {url} ...")
-                r = get(url, timeout=10, allow_redirects=True)
+                # 带明确 UA（裸 requests UA 可能被 CDN/WAF 拦），并区分连接/读取超时：
+                # 单个 10s 对"连得上但很慢"的镜像偏紧。
+                r = get(
+                    url,
+                    timeout=(10, 30),
+                    allow_redirects=True,
+                    headers={"User-Agent": USER_AGENT},
+                )
                 if r.status_code != 200:
                     raise ValueError(f"HTTP {r.status_code} {r.reason} for {url}")
             except Exception as e:

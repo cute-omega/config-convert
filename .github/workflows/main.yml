@@ -34,6 +34,14 @@ jobs:
       - name: Run config converting script
         run: python src/main.py --dns
 
+      - name: Commit refreshed fallback config
+        # assets/final_config.json 是"所有来源都拉不到"时的最后兜底，必须随每次成功运行刷新，
+        # 否则会像 2026-04 那样陈旧数月（连 remoteConfig.url 都可能指向已失效的地址）。
+        run: |
+          git add assets/final_config.json
+          git diff --staged --quiet || git commit -m "chore: 刷新回退配置（最后一次成功产物）"
+          git push origin HEAD:main
+
       - name: Checkout Pages repository
         uses: actions/checkout@v4
         with:
