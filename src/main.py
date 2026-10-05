@@ -26,6 +26,12 @@ from utils import resolve_pre_set_ip_list
 
 logger = logging.getLogger(__name__)
 
+# 官方配置的 GitHub 源（公开仓库，默认分支 main）：GithubConfig 会自动尝试 GITHUB_MIRRORS 镜像。
+# 历史教训：原自定义域名源 https://ds-official-config.bestar.de5.net/remote_config.json5
+# 在 GitHub Actions 节点上一直拉取失败，而失败被下面的回退静默吞掉 —— 症状是"只由官方配置提供"
+# 的字段（help 帮助中心内容最典型）永久冻结在最后一次成功拉取的状态，工作流却仍然 success。
+OFFICIAL_CONFIG_PATH = "Blue-Frontier/dev-sidecar-config/raw/main/remote_config.json5"
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -53,14 +59,15 @@ def main():
         excluded_domains: list[str] = load(f)
     logger.info(f"Finish loading excluded_domains from {excluded_domains_path}")
 
+    official_failure: str | None = None
     try:
-        # 获取 Dev-Sidecar 内置默认远程配置
-        official = RemoteConfig(
-            "https://ds-official-config.bestar.de5.net/remote_config.json5",
-            "Official",
-        )
+        # 获取 Dev-Sidecar 官方远程配置（GitHub 源，走内置镜像）
+        official = GithubConfig(OFFICIAL_CONFIG_PATH, "Official")
     except RuntimeError as e:
+        official_failure = str(e)
         logger.error(e)
+        # 回退必须"可见"：打 CI 注解，并写进产物的 updateLog（见下方），避免再次静默腐烂
+        print(f"::error::官方配置拉取失败，已回退到上一次产物（官方源：{OFFICIAL_CONFIG_PATH}）")
         logger.warning(
             "Failed to get official config, assume it has not changed and fallback to only update my last result."
         )
@@ -93,6 +100,11 @@ def main():
         datetime.now(tz=timezone(timedelta(hours=8))).strftime("%Y%m%d%H%M")
     )
     manual.config["app"]["metaInfo"]["version"] = config_version
+    if official_failure is not None:
+        # manual 优先级最高，这里的 updateLog 会出现在最终产物里（用户在界面上能看到）
+        manual.config["app"]["metaInfo"]["updateLog"] = (
+            f"⚠ 官方配置拉取失败，本次沿用上一次产物；请检查官方源：{OFFICIAL_CONFIG_PATH}"
+        )
 
     # 合并配置
     final_config = (

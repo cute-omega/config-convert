@@ -3,6 +3,7 @@ from os.path import abspath, dirname, join
 from ExtendedDict import ExtendedDict
 
 __all__ = [
+    "USER_AGENT",
     "GITHUB_MIRRORS",
     "GITHUB_USER_CONTENT_MIRRORS",
     "JSON5Object",
@@ -30,6 +31,9 @@ type JSONValue = (
 )
 # JSON5 解析结果：纯 JSON 值，或项目自定义的 ExtendedDict（UserDict 子类，不可直接序列化）
 type JSON5Object = JSONValue | ExtendedDict
+
+# 下载配置时使用的 User-Agent：裸 requests UA 可能被 CDN/WAF 当作爬虫拦截
+USER_AGENT = "config_convert/1.0 (+https://github.com/cute-omega/config_convert)"
 
 GITHUB_MIRRORS = [
     "github.com",
