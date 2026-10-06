@@ -201,7 +201,7 @@ class LocalConfig(Config):
     """
 
     def __post_init__(self):
-        with open(self.path) as f:
+        with open(self.path, encoding="utf-8") as f:
             self.raw_config = load(f)
             self.config = ExtendedDict(self.raw_config)
         super().__post_init__()

@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.14"
 
@@ -40,10 +40,12 @@ jobs:
         run: |
           git add assets/final_config.json
           git diff --staged --quiet || git commit -m "chore: 刷新回退配置（最后一次成功产物）"
-          git push origin HEAD:main
+          # main 受规则集保护（要求 PR + CodeQL 结果），直推必被拒；这里降级为 warning，
+          # 不能让回退配置的刷新挡住后面真正要发布的 Pages 产物
+          git push origin HEAD:main || echo "::warning::main 受规则集保护，回退配置未能推送（不影响 Pages 发布）"
 
       - name: Checkout Pages repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: cute-omega/cute-omega.github.io
           token: ${{ secrets.PAT }}
