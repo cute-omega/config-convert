@@ -55,7 +55,7 @@ def main():
     )
 
     # 读取 Excluded domains (Domains that should not be proxied now)
-    with open(excluded_domains_path) as f:
+    with open(excluded_domains_path, encoding="utf-8") as f:
         excluded_domains: list[str] = load(f)
     logger.info(f"Finish loading excluded_domains from {excluded_domains_path}")
 
