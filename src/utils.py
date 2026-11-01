@@ -18,6 +18,7 @@ from header import JSON5Object, JSONValue, dns_query_timeout, skip_IPv6
 
 __all__ = [
     "collect_resolvable_domains",
+    "fix_json5_invalid_escapes",
     "is_ipv6_address",
     "query_dns_records_async",
     "resolve_pre_set_ip_list",
@@ -300,3 +301,89 @@ def sort_json_object(obj: JSON5Object) -> JSONValue:
         return [sort_json_object(item) for item in obj]
 
     return obj
+
+
+# JSON5 字符串里合法的转义字符（\\ 后跟这些字符时按 JSON5 语义处理）
+_JSON5_LEGAL_ESCAPES = set("\"'\\/bfnrtv0xu")
+
+
+def fix_json5_invalid_escapes(text: str) -> tuple[str, list[tuple[int, str]]]:
+    """修复 JSON5 字符串里的非法单反斜杠转义，避免正则丢反斜杠。
+
+    JSON5 规定 ``\\`` 后跟非法转义字符时忽略反斜杠：``"^(.+\\\\.)?x\\\\.com$"``
+    会解析成 ``^(.+.)?x.com$``，正则因此变宽（``www.okx.com`` 也能命中）。
+    这里在解析前把这类非法转义改写成 ``\\\\<char>``，让反斜杠保留。
+
+    只处理字符串字面量内部的非法转义，跳过注释；``\\b``、``\\n``、``\\t`` 等
+    合法转义无法区分「正则意图」与「字符转义」，保持原样（需要配置作者自己写双反斜杠）。
+
+    Returns:
+        (修复后的文本, [(行号, 被吞掉的字符), ...])
+    """
+    out: list[str] = []
+    fixes: list[tuple[int, str]] = []
+    line = 1
+    i = 0
+    quote: str | None = None
+    n = len(text)
+
+    while i < n:
+        ch = text[i]
+
+        if quote is not None:
+            if ch == "\\":
+                nxt = text[i + 1] if i + 1 < n else ""
+                if nxt in ("\n", "\r"):
+                    # 续行转义，合法
+                    out.append(ch)
+                    out.append(nxt)
+                    line += 1
+                    i += 2
+                    continue
+                if nxt and nxt not in _JSON5_LEGAL_ESCAPES:
+                    out.append("\\\\")
+                    fixes.append((line, nxt))
+                    i += 1
+                    continue
+                out.append(ch)
+                if nxt:
+                    out.append(nxt)
+                i += 2
+                continue
+
+            if ch == quote:
+                quote = None
+            elif ch == "\n":
+                line += 1
+            out.append(ch)
+            i += 1
+            continue
+
+        if text.startswith("//", i):
+            end = text.find("\n", i)
+            if end < 0:
+                out.append(text[i:])
+                break
+            out.append(text[i:end])
+            i = end
+            continue
+
+        if text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                out.append(text[i:])
+                break
+            segment = text[i : end + 2]
+            line += segment.count("\n")
+            out.append(segment)
+            i = end + 2
+            continue
+
+        if ch in ("\"", "'"):
+            quote = ch
+        elif ch == "\n":
+            line += 1
+        out.append(ch)
+        i += 1
+
+    return "".join(out), fixes
