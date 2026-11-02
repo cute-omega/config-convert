@@ -333,12 +333,17 @@ def fix_json5_invalid_escapes(text: str) -> tuple[str, list[tuple[int, str]]]:
         if quote is not None:
             if ch == "\\":
                 nxt = text[i + 1] if i + 1 < n else ""
-                if nxt in ("\n", "\r"):
+                if nxt in ("\n", "\r", "\u2028", "\u2029"):
                     # 续行转义，合法
                     out.append(ch)
                     out.append(nxt)
-                    line += 1
-                    i += 2
+                    if nxt == "\r" and i + 2 < n and text[i + 2] == "\n":
+                        out.append("\n")
+                        line += 1
+                        i += 3
+                    else:
+                        line += 1
+                        i += 2
                     continue
                 if nxt and nxt not in _JSON5_LEGAL_ESCAPES:
                     out.append("\\\\")
