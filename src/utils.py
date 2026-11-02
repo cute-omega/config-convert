@@ -360,8 +360,10 @@ def fix_json5_invalid_escapes(text: str) -> tuple[str, list[tuple[int, str]]]:
             continue
 
         if text.startswith("//", i):
-            end = text.find("\n", i)
-            if end < 0:
+            end = i + 2
+            while end < n and text[end] not in ("\n", "\r", "\u2028", "\u2029"):
+                end += 1
+            if end >= n:
                 out.append(text[i:])
                 break
             out.append(text[i:end])
