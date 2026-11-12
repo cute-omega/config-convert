@@ -1174,11 +1174,13 @@
     intercepts: {
       "^.*(youtube.com|gstatic.com|youtube.nocookie.com|youtu.be|ggpht.com|i.ytimg.com|blogger.com|doodles.google|about.google|android.com|antigravity.google)$": {
         ".*": {
+          unVerifySsl: true,
           sni: "www.google.cn",
         },
       },
       "^.*(wikipedia|wikimedia|wikinews|wiktionary|wikiversity|wikidata|wikiquote|wikivoyage|wikifunctions|wikibooks).org$": {
         ".*": {
+          unVerifySsl: true,
           sni: "mediawiki.org",
         },
       },
@@ -1189,6 +1191,7 @@
       },
       "^(?!.*(translate-pa).google(?:apis|usercontent)?.com).*google(?:apis|usercontent)?.com$": {
         ".*": {
+          unVerifySsl: true,
           desc: "部分需要走其它代理的服务",
           sni: "www.google.cn",
         },
@@ -1216,6 +1219,7 @@
       },
       "^(?!.*cloudflare).*steamstatic.com$": {
         ".*": {
+          unVerifySsl: true,
           desc: "steam社区数据不能也不需调整sni,直接直连",
           sni: "baidu.com",
         },
@@ -1227,11 +1231,13 @@
       },
       "^(cloud|go|goto|id)\\.docker\\.com$": {
         ".*": {
+          unVerifySsl: true,
           sni: "goto.docker.com",
         },
       },
       "^(registry-1|index)\\.docker\\.io$": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -1247,6 +1253,7 @@
       },
       "external-content.duckduckgo.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -1259,6 +1266,7 @@
       },
       "^(?<pre>.*).googlevideo.com$": {
         ".*": {
+          unVerifySsl: true,
           options: true,
           proxy: "${pre}.xn--ngstr-lra8j.com",
           sni: "g.cn",
@@ -1290,6 +1298,7 @@
       },
       "^.*\\.google\\.com(\\.\\w+)?$": {
         ".*": {
+          unVerifySsl: true,
           sni: "www.google.cn",
         },
       },
@@ -1338,6 +1347,7 @@
       },
       "*.youtube-nocookie.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -1353,7 +1363,7 @@
       },
       "discuss.huggingface.co": {
         ".*": {
-          sni: "none",
+          sni: "hellohellohello.hosted-by-discourse.com",
         },
       },
       "kws1*.web.telegram.org": {
@@ -1423,7 +1433,7 @@
       },
       "business.whatsapp.com": {
         ".*": {
-          sni: "none",
+          sni: "scontent.xx.fbcdn.net",
         },
       },
       "cdn1.cdn-telegram.org": {
@@ -1473,6 +1483,7 @@
       },
       "update.greasyfork.org": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -1498,6 +1509,7 @@
           desc: "采集数据，快速成功",
         },
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -1528,6 +1540,7 @@
       },
       "*steamcommunity.com": {
         "^(?!/discussions|/Profile|/app.*/discussions).*$": {
+          unVerifySsl: true,
           desc: "讨论区锁区,考虑不拦截丢给彩蛋",
           sni: "baidu.com",
         },
@@ -1588,6 +1601,7 @@
       },
       "*.cdninstagram.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "g.cn",
         },
       },
@@ -1598,11 +1612,13 @@
       },
       "*.nikke-global.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
       "*onedrive.live.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -1643,6 +1659,7 @@
       },
       "*redditstatic.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -1698,6 +1715,7 @@
       },
       "*.googleapis.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "www.google.cn",
         },
       },
@@ -1719,6 +1737,7 @@
       },
       "*redditmedia.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -1810,6 +1829,7 @@
       },
       "*.instagram.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "g.cn",
         },
       },
@@ -1835,6 +1855,7 @@
       },
       "*duckduckgo.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -1895,6 +1916,7 @@
       },
       "gist.github.com": {
         ".*": {
+          verifyHost: "github.com",
           sni: "baidu.com",
         },
       },
@@ -1925,11 +1947,13 @@
       },
       "*.gravatar.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
       "*apkmirror.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -1955,6 +1979,7 @@
       },
       "*startpage.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2066,16 +2091,19 @@
       },
       "*.intercom.io": {
         ".*": {
+          unVerifySsl: true,
           sni: "g.cn",
         },
       },
       "*.windows.net": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
       "*.youtube.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -2106,7 +2134,7 @@
       },
       "*facebook.com": {
         ".*": {
-          sni: "none",
+          sni: "scontent.xx.fbcdn.net",
         },
       },
       "*gamer.com.tw": {
@@ -2156,6 +2184,7 @@
       },
       "*z-library.sk": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2206,6 +2235,7 @@
       },
       "*archive.org": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2236,11 +2266,13 @@
       },
       "*dropbox.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
       "*f-droid.org": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -2331,6 +2363,7 @@
       },
       "*.ggpht.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "g.cn",
         },
       },
@@ -2341,11 +2374,13 @@
       },
       "*.pixiv.org": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
       "*.pximg.net": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -2396,6 +2431,7 @@
       },
       "*reddit.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2421,6 +2457,7 @@
       },
       "*z-lib.help": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2447,11 +2484,13 @@
       },
       "i.ytimg.com": {
         ".*": {
+          unVerifySsl: true,
           sni: "g.cn",
         },
       },
       "*.youtu.be": {
         ".*": {
+          unVerifySsl: true,
           sni: "baidu.com",
         },
       },
@@ -2477,7 +2516,7 @@
       },
       "*fbcdn.net": {
         ".*": {
-          sni: "none",
+          sni: "scontent.xx.fbcdn.net",
         },
       },
       "*imgur.com": {
@@ -2527,6 +2566,7 @@
       },
       "fdroid.org": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2610,6 +2650,7 @@
       },
       "docker.io": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2660,6 +2701,7 @@
       },
       "*redd.it": {
         ".*": {
+          unVerifySsl: true,
           sni: "none",
         },
       },
@@ -2685,6 +2727,7 @@
       },
       "*w.wiki": {
         ".*": {
+          unVerifySsl: true,
           sni: "mediawiki.org",
         },
       },
@@ -2868,10 +2911,11 @@
           "*t.co",
           "*twitter.com",
           "*twimg.com",
-          "^(.+.)?x.com$",
+          "^(.+\\.)?x\\.com$",
         ],
         tryAllProviders: true,
         parallelDelay: 200,
+        sharedConfig: "AEX+DQBBBAAgACD5ePjdqyD/98Ay87SkPKvxDV1OX57c8B6ad9YZLiBDbAAEAAEAAQASY2xvdWRmbGFyZS1lY2guY29tAAA=",
         publicName: "cloudflare-ech.com",
         cacheSize: 512,
         emptyTtl: 600000,
@@ -2880,7 +2924,7 @@
           "*twitter.com",
           "*twimg.com",
           "*sci-hub.pub",
-          "^(.+.)?x.com$",
+          "^(.+\\.)?x\\.com$",
           "*matrix.org",
           "*mod.io",
           "*itch.io",
@@ -2899,6 +2943,8 @@
           "civitai.com",
           "*linux.do",
           "greasyfork.org",
+          "*grok.com",
+          "*x.ai",
         ],
         enabled: true,
         maxTtl: 3600000,
@@ -3323,7 +3369,7 @@
     },
     metaInfo: {
       updateLog: "周期性自动更新",
-      version: 202610311731,
+      version: 202611121225,
       id: "io.github.cute-omega",
     },
   },
