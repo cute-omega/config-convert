@@ -39,6 +39,9 @@ _HOSTNAME_RE = re.compile(
 # 这些 SNI 只是敲门用的诱饵，不能拿来推断 SAN 的归属
 _DECOY_SNI = {"", "none", "baidu.com", "www.baidu.com", "g.cn", "www.g.cn"}
 
+# 每条规则最多探测多少个预设目标：同一规则的多个地址必须得到同一个 verifyHost 才写入
+_MAX_PROBE_IPS = 8
+
 
 def _probe_host_for_key(key: str) -> str | None:
     """把拦截键映射成可用于探测的具体主机名。
@@ -76,7 +79,12 @@ def _iter_pending_rules(config: ExtendedDict) -> Iterable[tuple[str, str, str, M
         for rule in rules.values():
             if not isinstance(rule, MutableMapping):
                 continue
-            if rule.get("sni") is None:
+            sni = rule.get("sni")
+            if sni is None:
+                continue
+            # sni 与键相同 = 没有改写 SNI，探测没有意义；反而可能把「本来就该失败」的
+            # 规则改成用无关证书通过
+            if str(sni).lower().rstrip(".") == key.lower().rstrip("."):
                 continue
             if rule.get("verifyHost") or rule.get("unVerifySsl") is True:
                 continue
@@ -88,29 +96,45 @@ def _iter_pending_rules(config: ExtendedDict) -> Iterable[tuple[str, str, str, M
             yield key, probe_host, base_host, rule
 
 
-def _preset_ips(config: ExtendedDict, host: str) -> list[str]:
-    """取 preSetIpList 里该域名已有的启用 IP（优先 IPv4）。
+def _preset_targets(
+    config: ExtendedDict, host: str
+) -> tuple[list[str], list[str], bool]:
+    """取 preSetIpList 里该域名的启用目标。
 
-    - 值为 `false` 的条目是显式禁用的目标，运行期不会使用，不能拿来探测；
-    - 只接受 global 地址：preSetIpList 来自远端配置，不能让配置把 CI 引去连
-      loopback / RFC1918 / link-local / 云元数据等内部地址。
+    返回 (字面 IP 列表, 主机名目标列表, 是否存在条目)。
+    上游的 preSetIpList 并不总是字面 IP（产物里出现过 `google.spacetime.cc.cd`
+    这类主机名目标），两种都要保留；值为 `false` 的是显式禁用目标，必须跳过；
+    只接受 global 地址，避免远端配置把 CI 引去连 loopback / 私网 / 云元数据。
     """
     preset = config.get("server", {}).get("preSetIpList", {})
     if not isinstance(preset, Mapping):
-        return []
+        return [], [], False
     entries = preset.get(host)
     if not isinstance(entries, Mapping):
-        return []
+        return [], [], False
 
     ips: list[str] = []
-    for ip, enabled in entries.items():
+    names: list[str] = []
+    for target, enabled in entries.items():
         if enabled is False:
             continue
-        candidate = str(ip).strip("[]")
-        if _is_global_ip(candidate):
-            ips.append(candidate)
+        candidate = str(target).strip("[]")
+        if _is_ip_literal(candidate):
+            if _is_global_ip(candidate):
+                ips.append(candidate)
+            continue  # 明确是 IP 但不合法（私网/保留段），不能当主机名去解析
+        if _HOSTNAME_RE.match(candidate):
+            names.append(candidate)
     ips.sort(key=lambda ip: ":" in ip)  # IPv4 优先
-    return ips
+    return ips, names, True
+
+
+def _is_ip_literal(value: str) -> bool:
+    try:
+        ipaddress.ip_address(value)
+        return True
+    except ValueError:
+        return False
 
 
 def _is_global_ip(value: str) -> bool:
@@ -227,26 +251,49 @@ async def _probe_one(
     config: ExtendedDict,
     timeout: float,
 ) -> tuple[str | None, str]:
-    """返回 (verifyHost|None, 状态)。状态：ok / unreachable / no-probe / mismatch。"""
+    """返回 (verifyHost|None, 状态)。状态：ok / unreachable / no-probe / mismatch / mixed。"""
     sni = str(rule.get("sni"))
-    ips = _preset_ips(config, key) or _preset_ips(config, base_host)
-    if not ips:
+    ips, names, has_entries = _preset_targets(config, key)
+    if not has_entries:
+        ips, names, has_entries = _preset_targets(config, base_host)
+
+    if has_entries:
+        # 预设目标也可能是主机名（产物里出现过 google.spacetime.cc.cd）
+        extra: list[str] = []
+        for name in names[:3]:
+            extra.extend(await _resolve_ips(name, timeout))
+        ips = list(dict.fromkeys([*ips, *extra]))
+        if not ips:
+            # 目标全被禁用、或主机名解析失败：不能退回去探测真实域名 —— 那是另一个端点
+            return None, "unreachable"
+    else:
         ips = await _resolve_ips(base_host, timeout)
+
     if not ips:
         return None, "unreachable"
 
-    for ip in ips[:3]:
+    picked: list[str] = []
+    for ip in ips[:_MAX_PROBE_IPS]:
         der = await _fetch_der(ip, sni, timeout)
         if der is None:
-            continue
+            continue  # 该地址不可达，不参与共识
         sans = _decode_sans(der)
         if not sans:
-            return None, "no-probe"
+            continue
+        if any(_match_name(probe_host, san) for san in sans):
+            # 有地址本来就能通过校验：运行期可能选中它，此时写 verifyHost 反而会弄坏
+            return None, "ok"
         verify_host = _pick_verify_host(probe_host, sni, sans)
         if verify_host is None:
-            return None, "ok"
-        return verify_host, "mismatch"
-    return None, "unreachable"
+            return None, "no-probe"
+        picked.append(verify_host)
+
+    if not picked:
+        return None, "unreachable"
+    if len(set(picked)) > 1:
+        # 多个地址的证书 SAN 不一致，写死的 verifyHost 只对其中一部分成立
+        return None, "mixed"
+    return picked[0], "mismatch"
 
 
 async def probe_and_fill_verify_host(
