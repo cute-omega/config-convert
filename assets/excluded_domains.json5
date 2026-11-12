@@ -1,1 +1,6 @@
-[]
+[
+  // 临时措施：上游收录的 store.steampowered.com target IP 已失效（握手稳定返回
+  // TLS alert 80），且这条精确键会盖住官方 ^(store|checkout).steampowered.com$ 的六 IP 规则。
+  // 排除精确键后，由官方正则规则接管。
+  "store.steampowered.com",
+]

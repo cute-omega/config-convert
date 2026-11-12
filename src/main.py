@@ -23,6 +23,7 @@ from header import (
     xget_config_path,
 )
 from utils import resolve_pre_set_ip_list
+from verify_host import probe_and_fill_verify_host
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,11 @@ def main():
         "--dns",
         action="store_true",
         help="额外生成含可信 DNS 解析 IP 的第二份配置（基础配置始终生成；默认不生成第二份）",
+    )
+    parser.add_argument(
+        "--probe",
+        action="store_true",
+        help="实测改写 SNI 的规则，为证书与真实域名不匹配的条目补 verifyHost（需干净网络，CI 使用）",
     )
     args = parser.parse_args()
     level = logging.DEBUG if args.debug else logging.INFO
@@ -118,6 +124,17 @@ def main():
     # 排除域名最后处理，确保对全部来源生效
     final_config = final_config - excluded_domains
     logger.info("Finish merging all configs and clearing excluded domain rules")
+
+    # 可选：实测改写 SNI 的规则，补 verifyHost（#745 起 sni 不再隐式关闭证书校验）。
+    # 只在干净网络下可信；失败条目保持原样，不写入未经证实的结果。
+    if args.probe:
+        probed, added, ok, failed = asyncio.run(
+            probe_and_fill_verify_host(final_config)
+        )
+        logger.info(
+            f"verifyHost 探测完成：探测 {probed} 条，补写 {added} 条，"
+            f"无需补写 {ok} 条，未能确认 {failed} 条"
+        )
 
     # 保存 Dev-Sidecar 配置（save() 内部会调用 sort_json_object 排序）
     MemoryConfig("Memory", "Final Sorted", final_config).save(final_config_path)

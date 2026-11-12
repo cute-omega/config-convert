@@ -17,6 +17,8 @@ __all__ = [
     "final_config_path",
     "manual_path",
     "skip_IPv6",
+    "verify_host_probe_concurrency",
+    "verify_host_probe_timeout",
     "xget_config_path",
 ]
 
@@ -65,6 +67,11 @@ TRUSTED_DNS_SERVERS = [
 
 # 单次 DNS 查询超时（秒）
 dns_query_timeout = 5.0
+
+# verifyHost 探测：单条 TLS 握手超时（秒）与并发数。
+# 探测只应在干净网络（CI）下运行；本地受污染/被墙时大量条目会失败，失败条目不会写入。
+verify_host_probe_timeout = 6.0
+verify_host_probe_concurrency = 16
 
 # DNS 版产物的 metaInfo.id。必须与标准版（assets/manual_config.json5 里的 io.github.cute-omega）
 # 不同，否则 dev-sidecar 会把两份配置当成同一个而互相覆盖。

@@ -177,11 +177,11 @@ class SheasCealerConfig(Config):
             # 上游第二个字段是「SNI 覆盖」：非空时用该值，空字符串表示不发送 SNI。
             #
             # 这里刻意改写成无害字面量 "none"，而不是 Dev-Sidecar 的空字符串写法：
-            # 实测发空 SNI 会让 Fastly 一类边缘返回 default.ssl.fastly.net 的默认证书，
-            # 而 sni.js 的空串分支在切换到 unVerifySsl agent 之前就 return 了，
-            # 于是证书校验失败（www.reddit.com 稳定 500）；写成 "none" 走常规分支，
-            # 会顺带切到 unVerifySsl agent，访问正常。给规则额外加 unVerifySsl: true
-            # 也无法补救。
+            # 发空 SNI 时 Fastly 一类边缘会返回 default.ssl.fastly.net 的默认证书；
+            # 旧版内核（2.3.4 之前）的 sni.js 空串分支在切换免校验 agent 之前就 return，
+            # 于是证书校验失败（www.reddit.com 稳定 500）。
+            # 2.3.4 起（#745）`sni: ""` + `unVerifySsl: true` 已能正常工作，但本转换器
+            # 的产物要兼容旧版，所以仍输出 "none"：它走常规分支，新旧版本都可用。
             sni: str | None = item[1]
             if sni is None:
                 continue
