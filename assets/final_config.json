@@ -113,7 +113,6 @@
         "*.pixiv.org": true,
         "*.v2fly.org": true,
         "*.bing.com": false,
-        "*.v2ex.com": true,
         "telegra.ph": true,
       },
       pac: {
@@ -180,6 +179,9 @@
         "23.32.91.17": true,
         "23.32.91.19": true,
       },
+      "geminiweb-pa.clients6.google.com": {
+        "47.102.115.14": true,
+      },
       "production.cloudflare.docker.com": {
         "104.16.100.215": true,
       },
@@ -197,6 +199,7 @@
       },
       "graphql.api.dailymotion.com": {
         "34.84.14.157": true,
+        "18.65.14.65": true,
       },
       "^(.*\\.)?usercontent\\.goog$": {
         "47.102.115.14": {
@@ -311,8 +314,11 @@
       "kws5*.web.telegram.org": {
         "149.154.170.100": true,
       },
-      "store.steampowered.com": {
-        "23.39.61.133": true,
+      "my.urbandictionary.com": {
+        "5.161.34.136": true,
+      },
+      "web-static.archive.org": {
+        "207.241.237.2": true,
       },
       "zws1*.web.telegram.org": {
         "149.154.174.200": true,
@@ -330,7 +336,7 @@
         "149.154.170.200": true,
       },
       "*youtube-nocookie.com": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "account-api.proton.me": {
         "185.70.42.20": true,
@@ -349,6 +355,7 @@
       },
       "copilot.microsoft.com": {
         "2001:67c:2960:6464::cc4f:c5ed": true,
+        "copilot.com": true,
       },
       "docs-editor.proton.me": {
         "185.70.42.70": true,
@@ -357,6 +364,7 @@
         "185.205.70.10": true,
       },
       "irc-ws.chat.twitch.tv": {
+        "44.226.132.122": true,
         "3.167.200.113": true,
       },
       "status.huggingface.co": {
@@ -379,6 +387,9 @@
       },
       "*archiveofourown.org": {
         "104.20.8.2": true,
+      },
+      "*urbandictionary.com": {
+        "107.150.176.1": true,
       },
       "account.nicovideo.jp": {
         "3.167.200.113": true,
@@ -408,8 +419,11 @@
         "20.205.243.165": true,
       },
       "identity.flickr.com": {
-        "100.57.141.104": true,
+        "34.192.66.226": true,
         "52.6.22.65": true,
+      },
+      "public.api.bsky.app": {
+        "185.111.111.157": true,
       },
       "services.github.com": {
         "140.82.113.18": true,
@@ -479,6 +493,7 @@
       },
       "upld.e-hentai.org": {
         "89.149.221.236": true,
+        "85.17.247.144": true,
       },
       "wktk.nicovideo.jp": {
         "3.167.200.113": true,
@@ -558,6 +573,9 @@
       "wallet.proton.me": {
         "194.0.147.12": true,
       },
+      "web-cdn.bsky.app": {
+        "138.199.24.209": true,
+      },
       "*.instagram.com": {
         "102.132.104.174": true,
         "157.240.210.174": true,
@@ -586,9 +604,6 @@
       "*duckduckgo.com": {
         "20.43.161.105": true,
       },
-      "*greasyfork.org": {
-        "96.126.98.220": true,
-      },
       "*huggingface.co": {
         "3.167.200.113": true,
       },
@@ -604,18 +619,22 @@
       "*wiktionary.org": {
         "185.15.59.224": true,
       },
+      "^(.+\\.)?x\\.com$": {
+        "172.67.172.22": true,
+      },
       "docs.github.com": {
         "185.199.110.154": true,
       },
       "drive.proton.me": {
         "185.70.42.40": true,
       },
+      "events.bsky.app": {
+        "77.112.174.236": true,
+      },
       "gist.github.com": {
-        "20.200.245.247": true,
-        "20.205.243.166": false,
+        "20.205.243.166": true,
         "20.27.177.113": true,
-        "140.82.116.3": true,
-        "140.82.116.4": true,
+        "140.82.121.3": true,
         "4.237.22.38": true,
       },
       "index.docker.io": {
@@ -623,6 +642,9 @@
       },
       "sp.nicovideo.jp": {
         "3.167.200.113": true,
+      },
+      "status.bsky.app": {
+        "76.76.21.164": true,
       },
       "www.f-droid.org": {
         "37.218.243.72": true,
@@ -717,6 +739,9 @@
       "polymarket.com": {
         "64.239.109.1": true,
       },
+      "video.bsky.app": {
+        "169.150.207.211": true,
+      },
       "www.ecosia.org": {
         "2001:67c:2960:6464::ac40:9647": true,
       },
@@ -768,7 +793,7 @@
         "3.167.200.113": true,
       },
       "*telegram.org": {
-        "45.192.12.153": true,
+        "169.155.57.97": true,
         "93.183.68.61": true,
       },
       "*whatsapp.com": {
@@ -805,10 +830,11 @@
         "elb-io.us-east-1.aws.dckr.io": true,
       },
       "*android.com": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "*archive.org": {
         "207.241.237.2": true,
+        "207.241.237.3": true,
       },
       "*behance.net": {
         "2001:67c:2960:6464::9765:41c5": true,
@@ -817,7 +843,10 @@
         "2001:67c:2960:6464::6797:9785": true,
       },
       "*blogger.com": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
+      },
+      "*bsky.social": {
+        "52.203.70.156": true,
       },
       "*discord.com": {
         "162.159.136.232": true,
@@ -829,7 +858,7 @@
         "37.218.243.72": true,
       },
       "*gstatic.com": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "*lumalabs.ai": {
         "76.76.21.21": true,
@@ -847,7 +876,7 @@
         "66.254.114.40": true,
       },
       "*telegram.me": {
-        "45.192.12.153": true,
+        "169.155.57.97": true,
         "93.183.68.61": true,
       },
       "*thetvdb.com": {
@@ -855,6 +884,7 @@
         "13.3.222.88": true,
       },
       "*twitter.com": {
+        "151.101.2.146": true,
         "172.67.172.22": true,
       },
       "*xvideos.com": {
@@ -865,10 +895,16 @@
         "89.222.127.8": true,
       },
       "*youtube.com": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "_*.yahoo.com": {
         "2001:67c:2960:6464::b4de:6a0b": true,
+      },
+      "api.bsky.app": {
+        "108.179.136.10": true,
+      },
+      "cdn.bsky.app": {
+        "169.150.207.211": true,
       },
       "*.claude.ai": {
         "2a01:4f8:c2c:123f:64:5:a04f:680a": true,
@@ -877,14 +913,11 @@
         "210.140.139.155": true,
       },
       "*.ggpht.com": {
+        "google.spacetime.cc.cd": true,
         "142.251.189.206": {
           desc: "自动地区官方",
         },
-        "183.56.143.147": true,
         "8.137.102.117": false,
-      },
-      "*.pixiv.net": {
-        "210.140.139.155": true,
       },
       "*bbci.co.uk": {
         "23.77.21.232": true,
@@ -902,7 +935,7 @@
         "20.27.177.113": true,
       },
       "*google.com": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "*instagr.am": {
         "157.240.236.174": true,
@@ -918,7 +951,7 @@
         "205.220.231.24": true,
       },
       "*telesco.pe": {
-        "45.192.12.153": true,
+        "169.155.57.97": true,
         "93.183.68.61": true,
       },
       "*tumblr.com": {
@@ -952,10 +985,10 @@
         "203.137.29.49": true,
       },
       "i.ytimg.com": {
+        "google.spacetime.cc.cd": true,
         "142.251.189.206": {
           desc: "自动地区官方",
         },
-        "183.56.143.147": true,
         "8.137.102.117": false,
       },
       "m.twitch.tv": {
@@ -1003,6 +1036,7 @@
         "109.238.90.239": true,
       },
       "*twimg.com": {
+        "151.101.0.159": true,
         "172.67.172.22": true,
       },
       "*twitch.tv": {
@@ -1017,17 +1051,7 @@
       "github.com": {
         "20.200.245.247": true,
         "20.205.243.166": true,
-        "20.201.28.151": false,
-        "20.26.156.215": false,
         "20.27.177.113": true,
-        "140.82.113.3": false,
-        "140.82.114.4": false,
-        "140.82.116.3": false,
-        "140.82.116.4": false,
-        "140.82.121.3": false,
-        "140.82.121.4": false,
-        "20.87.245.0": false,
-        "4.237.22.38": false,
       },
       "github.dev": {
         "20.99.227.183": true,
@@ -1039,6 +1063,9 @@
         "149.154.161.145": true,
         "95.161.64.100": true,
         "95.161.64.99": true,
+      },
+      "*bsky.app": {
+        "18.217.21.49": true,
       },
       "*ehgt.org": {
         "109.236.85.28": true,
@@ -1058,7 +1085,7 @@
         "89.222.127.8": true,
       },
       "*youtu.be": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "docker.io": {
         "elb-io.us-east-1.aws.dckr.io": true,
@@ -1073,7 +1100,7 @@
         "146.75.36.81": true,
       },
       "*google*": {
-        "183.56.143.147": true,
+        "google.spacetime.cc.cd": true,
       },
       "*mega.io": {
         "66.203.127.11": true,
@@ -1098,11 +1125,14 @@
         "157.240.236.174": true,
         "157.240.27.174": true,
       },
+      "*.x.com": {
+        "151.101.2.146": true,
+      },
       "*rfi.fr": {
         "118.214.247.61": true,
       },
       "*tg.dev": {
-        "45.192.12.153": true,
+        "169.155.57.97": true,
         "93.183.68.61": true,
       },
       "*w.wiki": {
@@ -1118,9 +1148,6 @@
       "*ok.ru": {
         "5.61.23.30": true,
       },
-      "*x.com": {
-        "172.67.172.22": true,
-      },
       "w.wiki": {
         "185.15.59.224": true,
       },
@@ -1128,7 +1155,7 @@
         "172.67.172.22": true,
       },
       "*t.me": {
-        "45.192.12.153": true,
+        "169.155.57.97": true,
       },
       "ig.me": {
         "157.240.236.174": true,
@@ -1137,12 +1164,15 @@
       "ok.ru": {
         "5.61.23.11": true,
       },
+      "x.com": {
+        "151.101.2.146": true,
+      },
       "t.me": {
         "93.183.68.61": true,
       },
     },
     intercepts: {
-      "^.*(youtube.com|gstatic.com|youtube.nocookie.com|youtu.be|ggpht.com|i.ytimg.com|blogger.com|doodles.google|about.google|android.com)$": {
+      "^.*(youtube.com|gstatic.com|youtube.nocookie.com|youtu.be|ggpht.com|i.ytimg.com|blogger.com|doodles.google|about.google|android.com|antigravity.google)$": {
         ".*": {
           sni: "www.google.cn",
         },
@@ -1188,6 +1218,26 @@
         ".*": {
           desc: "steam社区数据不能也不需调整sni,直接直连",
           sni: "baidu.com",
+        },
+      },
+      "^(store|checkout).steampowered.com$": {
+        ".*": {
+          sni: "baidu.com",
+        },
+      },
+      "^(cloud|go|goto|id)\\.docker\\.com$": {
+        ".*": {
+          sni: "goto.docker.com",
+        },
+      },
+      "^(registry-1|index)\\.docker\\.io$": {
+        ".*": {
+          sni: "baidu.com",
+        },
+      },
+      "geminiweb-pa.clients6.google.com": {
+        ".*": {
+          sni: "none",
         },
       },
       "production.cloudflare.docker.com": {
@@ -1272,24 +1322,13 @@
         "^(/[^/]+)*/[^./]+\\.(svg|png|gif|jpg|jpeg|ico|js|css)(\\?.*)?$": {
           cacheDays: 365,
           desc: "图片、JS文件、CSS文件，缓存1年",
+          sni: "baidu.com",
         },
         "/assets/fakefile.js": {
           cacheDays: 365,
           success: {
             script: ";",
           },
-        },
-        ".*.backup": {
-          responseReplace: {
-            headers: {
-              "cross-origin-resource-policy": "cross-origin",
-              "access-control-allow-origin": "*",
-              "set-cookie": "[remove]",
-            },
-          },
-          proxy: "github.com",
-          desc: "github.com域名下，该请求已经不存在，此配置暂时先备份掉。",
-          sni: "baidu.com",
         },
       },
       "registry.hub.docker.com": {
@@ -1342,7 +1381,7 @@
           sni: "none",
         },
       },
-      "store.steampowered.com": {
+      "my.urbandictionary.com": {
         ".*": {
           sni: "none",
         },
@@ -1402,6 +1441,11 @@
           sni: "none",
         },
       },
+      "copilot.microsoft.com": {
+        ".*": {
+          sni: "copilot.microsoft.com",
+        },
+      },
       "docs-editor.proton.me": {
         ".*": {
           sni: "none",
@@ -1417,9 +1461,19 @@
           sni: "none",
         },
       },
+      "irc-ws.chat.twitch.tv": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "status.huggingface.co": {
         ".*": {
           sni: "status.singpass.gov.sg",
+        },
+      },
+      "update.greasyfork.org": {
+        ".*": {
+          sni: "baidu.com",
         },
       },
       "zrh-storage.proton.me": {
@@ -1428,6 +1482,11 @@
         },
       },
       "*archiveofourown.org": {
+        ".*": {
+          sni: "none",
+        },
+      },
+      "*urbandictionary.com": {
         ".*": {
           sni: "none",
         },
@@ -1470,7 +1529,7 @@
       "*steamcommunity.com": {
         "^(?!/discussions|/Profile|/app.*/discussions).*$": {
           desc: "讨论区锁区,考虑不拦截丢给彩蛋",
-          sni: "www.baidu.com",
+          sni: "baidu.com",
         },
         ".*": {
           sni: "none",
@@ -1517,6 +1576,11 @@
           proxy: "elastic.proxy.ustclug.org",
         },
       },
+      "public.api.bsky.app": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "services.github.com": {
         ".*": {
           sni: "none",
@@ -1535,11 +1599,6 @@
       "*.nikke-global.com": {
         ".*": {
           sni: "baidu.com",
-        },
-      },
-      "*.steampowered.com": {
-        ".*": {
-          sni: "www.baidu.com",
         },
       },
       "*onedrive.live.com": {
@@ -1688,6 +1747,11 @@
           sni: "disneyplus.com",
         },
       },
+      "assets.twitch.tv": {
+        ".*": {
+          sni: "static.twitchcdn.net",
+        },
+      },
       "cdn.jsdelivr.net": {
         "^/.*\\.(js|css|png|jpg|jpeg|gif|json)(\\?.*)?$": {
           backup: [
@@ -1734,6 +1798,11 @@
           sni: "none",
         },
       },
+      "web-cdn.bsky.app": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "*.buy.yahoo.com": {
         ".*": {
           sni: "buy.yahoo.com",
@@ -1771,7 +1840,7 @@
       },
       "*greasyfork.org": {
         ".*": {
-          sni: "none",
+          sni: "www.baidu.com",
         },
       },
       "*huggingface.co": {
@@ -1819,6 +1888,16 @@
           sni: "none",
         },
       },
+      "events.bsky.app": {
+        ".*": {
+          sni: "none",
+        },
+      },
+      "gist.github.com": {
+        ".*": {
+          sni: "baidu.com",
+        },
+      },
       "index.docker.io": {
         ".*": {
           sni: "none",
@@ -1827,6 +1906,11 @@
       "repo1.maven.org": {
         ".*": {
           proxy: "maven.proxy.ustclug.org",
+        },
+      },
+      "status.bsky.app": {
+        ".*": {
+          sni: "none",
         },
       },
       "www.f-droid.org": {
@@ -1964,6 +2048,11 @@
           sni: "vercel.com",
         },
       },
+      "video.bsky.app": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "www.ecosia.org": {
         ".*": {
           sni: "www.ecosia.org",
@@ -2090,11 +2179,6 @@
           sni: "none",
         },
       },
-      "gql.twitch.tv": {
-        ".*": {
-          sni: "none",
-        },
-      },
       "raw.incept.pw": {
         "^.*\\?DS_DOWNLOAD$": {
           responseReplace: {
@@ -2140,6 +2224,11 @@
           sni: "g.cn",
         },
       },
+      "*bsky.social": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "*discord.com": {
         ".*": {
           sni: "none",
@@ -2152,7 +2241,7 @@
       },
       "*f-droid.org": {
         ".*": {
-          sni: "www.baidu.com",
+          sni: "baidu.com",
         },
       },
       "*gstatic.com": {
@@ -2200,6 +2289,11 @@
           sni: "none",
         },
       },
+      "*twitter.com": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "*xvideos.com": {
         ".*": {
           sni: "none",
@@ -2215,6 +2309,16 @@
           sni: "g.cn",
         },
       },
+      "api.bsky.app": {
+        ".*": {
+          sni: "none",
+        },
+      },
+      "cdn.bsky.app": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "cn.vuejs.org": {
         ".*": {
           sni: "vuejs.org",
@@ -2225,11 +2329,6 @@
           sni: "claude.ai",
         },
       },
-      "*.fanbox.cc": {
-        ".*": {
-          sni: "none",
-        },
-      },
       "*.ggpht.com": {
         ".*": {
           sni: "g.cn",
@@ -2238,11 +2337,6 @@
       "*.github.io": {
         ".*": {
           sni: "baidu.com",
-        },
-      },
-      "*.pixiv.net": {
-        ".*": {
-          sni: "none",
         },
       },
       "*.pixiv.org": {
@@ -2356,11 +2450,6 @@
           sni: "g.cn",
         },
       },
-      "m.twitch.tv": {
-        ".*": {
-          sni: "none",
-        },
-      },
       "*.youtu.be": {
         ".*": {
           sni: "baidu.com",
@@ -2421,6 +2510,11 @@
           sni: "none",
         },
       },
+      "*twimg.com": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "*twitch.tv": {
         ".*": {
           sni: "none",
@@ -2439,9 +2533,8 @@
       "github.com": {
         "^((/[^/]+){2,})/raw((/[^/]+)+\\.(jpg|jpeg|png|gif))(\\?.*)?$": {
           cacheDays: 365,
-          proxy: null,
           desc: "仓库内图片重定向，缓存1年。",
-          sni: null,
+          sni: "baidu.com",
         },
         "^((/[^/]+){2,})/raw((/[^/]+)+\\.js)(\\?.*)?$": {
           responseReplace: {
@@ -2449,9 +2542,8 @@
               "content-type": "application/javascript; charset=utf-8",
             },
           },
-          proxy: null,
           desc: "仓库内脚本，设置响应头Content-Type。作用：方便script拦截器直接使用，避免引起跨域问题和脚本内容限制问题。",
-          sni: null,
+          sni: "baidu.com",
         },
         "^(/[\\w-.]+){2,}/?(\\?.*)?$": null,
         "^(/[^/]+){2,}/?(\\?.*)?$": {
@@ -2459,6 +2551,10 @@
           remark: "注：上面所使用的脚本地址，为高速镜像地址。",
           script: "https://ds-official-config.bestar.de5.net/GithubEnhanced-High-Speed-Download.user.js",
           desc: "油猴脚本：高速下载 Git Clone/SSH、Release、Raw、Code(ZIP) 等文件 (公益加速)、项目列表单文件快捷下载、添加 git clone 命令",
+          sni: "baidu.com",
+        },
+        ".*": {
+          sni: "baidu.com",
         },
       },
       "s.yimg.com": {
@@ -2472,9 +2568,19 @@
           sni: "none",
         },
       },
-      "*ehgt.org": {
+      "*arena.ai": {
+        ".*": {
+          sni: "arena.ai",
+        },
+      },
+      "*bsky.app": {
         ".*": {
           sni: "none",
+        },
+      },
+      "*ehgt.org": {
+        ".*": {
+          sni: "www.baidu.com",
         },
       },
       "*etsy.com": {
@@ -2562,6 +2668,11 @@
           sni: "none",
         },
       },
+      "*.x.com": {
+        ".*": {
+          sni: "none",
+        },
+      },
       "*rfi.fr": {
         ".*": {
           sni: "none",
@@ -2617,6 +2728,11 @@
           sni: "none",
         },
       },
+      "x.com": {
+        ".*": {
+          sni: "none",
+        },
+      },
     },
     whiteList: {
       "*.bilibili.*": true,
@@ -2651,8 +2767,8 @@
         "img.shields.io": "4",
         "*.gstatic.com": "4",
         "*.iubenda.com": "4",
+        "*.vsassets.io": "4",
         "*.yarnpkg.com": "4",
-        "*.docker.com": "4",
         "*.github.com": "4",
         "*github*.com": "4",
         "*.brave.com": "4",
@@ -2661,7 +2777,7 @@
         "*.pximg.net": "4",
         "*.gvt1.com": "6",
         "*.pypi.org": "4",
-        "*.v2ex.com": "4",
+        "*docker*": "4",
       },
       providers: {
         "quad9-ip": {
@@ -2683,7 +2799,7 @@
         },
         "cf-DoH": {
           server: "https://cloudflare-dns.com/dns-query",
-          sni: "baidu.com",
+          sni: "cf",
         },
         "cf-DoT": {
           server: "tls://1.1.1.1",
@@ -2724,6 +2840,7 @@
         "*.onesignal.com": "cf-DoT",
         "img.shields.io": "cf-DoT",
         "*.iubenda.com": "cf-DoT",
+        "*.vsassets.io": "cf-DoT",
         "*.yarnpkg.com": "cf-DoT",
         "*.github.com": "local",
         "*github*.com": "local",
@@ -2733,12 +2850,13 @@
         "*.pximg.net": "cf-DoT",
         "*.gvt1.com": "bebasid",
         "*.pypi.org": "cf-DoT",
-        "*.v2ex.com": "cf-DoT",
         "github.com": "local",
+        "*docker*": "cf-DoH",
       },
       nat64: {
         domains: [
           "*chatgpt.com",
+          "*openai.com",
         ],
         enabled: true,
         prefix: "",
@@ -2750,7 +2868,7 @@
           "*t.co",
           "*twitter.com",
           "*twimg.com",
-          "*x.com",
+          "^(.+.)?x.com$",
         ],
         tryAllProviders: true,
         parallelDelay: 200,
@@ -2762,15 +2880,25 @@
           "*twitter.com",
           "*twimg.com",
           "*sci-hub.pub",
-          "*x.com",
-          "*docker.com",
+          "^(.+.)?x.com$",
+          "*matrix.org",
+          "*mod.io",
+          "*itch.io",
+          "*patreon.com",
+          "*substack.com",
+          "*medium.com",
+          "*v2ex.com",
+          "auth.docker.io",
+          "hub.docker.com",
           "*pixiv.net",
+          "*openai.com",
           "*chatgpt.com",
           "*civitai.com",
+          "*civitai.red",
           "*ldstatic.com",
           "civitai.com",
           "*linux.do",
-          "*greasyfork.org",
+          "greasyfork.org",
         ],
         enabled: true,
         maxTtl: 3600000,
@@ -3195,7 +3323,7 @@
     },
     metaInfo: {
       updateLog: "周期性自动更新",
-      version: 202610061947,
+      version: 202610311731,
       id: "io.github.cute-omega",
     },
   },
