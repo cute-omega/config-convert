@@ -36,6 +36,9 @@ _HOSTNAME_RE = re.compile(
     r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+$"
 )
 
+# 这些 SNI 只是敲门用的诱饵，不能拿来推断 SAN 的归属
+_DECOY_SNI = {"", "none", "baidu.com", "www.baidu.com", "g.cn", "www.g.cn"}
+
 
 def _probe_host_for_key(key: str) -> str | None:
     """把拦截键映射成可用于探测的具体主机名。
@@ -86,7 +89,12 @@ def _iter_pending_rules(config: ExtendedDict) -> Iterable[tuple[str, str, str, M
 
 
 def _preset_ips(config: ExtendedDict, host: str) -> list[str]:
-    """取 preSetIpList 里该域名已有的 IP（优先 IPv4），并做合法性过滤。"""
+    """取 preSetIpList 里该域名已有的启用 IP（优先 IPv4）。
+
+    - 值为 `false` 的条目是显式禁用的目标，运行期不会使用，不能拿来探测；
+    - 只接受 global 地址：preSetIpList 来自远端配置，不能让配置把 CI 引去连
+      loopback / RFC1918 / link-local / 云元数据等内部地址。
+    """
     preset = config.get("server", {}).get("preSetIpList", {})
     if not isinstance(preset, Mapping):
         return []
@@ -94,20 +102,21 @@ def _preset_ips(config: ExtendedDict, host: str) -> list[str]:
     if not isinstance(entries, Mapping):
         return []
 
-    def clean(value: str) -> str:
-        value = value.strip("[]")
-        return value
+    ips: list[str] = []
+    for ip, enabled in entries.items():
+        if enabled is False:
+            continue
+        candidate = str(ip).strip("[]")
+        if _is_global_ip(candidate):
+            ips.append(candidate)
+    ips.sort(key=lambda ip: ":" in ip)  # IPv4 优先
+    return ips
 
-    ips = [clean(str(ip)) for ip in entries]
-    valid = [ip for ip in ips if _is_ip(ip)]
-    valid.sort(key=lambda ip: ":" in ip)  # IPv4 优先
-    return valid
 
-
-def _is_ip(value: str) -> bool:
+def _is_global_ip(value: str) -> bool:
+    """只允许可路由的公网地址（排除 loopback / 私网 / 链路本地 / 保留段）。"""
     try:
-        ipaddress.ip_address(value)
-        return True
+        return ipaddress.ip_address(value).is_global
     except ValueError:
         return False
 
@@ -123,7 +132,7 @@ async def _resolve_ips(host: str, timeout: float) -> list[str]:
     ips: list[str] = []
     for info in infos:
         ip = str(info[4][0])
-        if ip not in ips:
+        if ip not in ips and _is_global_ip(ip):
             ips.append(ip)
     return ips
 
@@ -184,21 +193,29 @@ def _match_name(name: str, pattern: str) -> bool:
     return name == pattern
 
 
-def _pick_verify_host(host: str, sans: list[str]) -> str | None:
-    """真实域名不在证书里时，挑一个能通过校验的名字。
+def _related_name(host: str, sni: str, san: str) -> bool:
+    """SAN 是否与目标域名/SNI 有可证明的归属关系。
 
-    优先选与真实域名同后缀（如 gist.github.com → github.com），其次任一精确 SAN；
-    只有通配符时不猜（生成的名字没有语义，宁可不写）。
+    只承认两类：与真实域名同后缀（gist.github.com → github.com），
+    或与真实 SNI 同后缀（huggingface.co 用 huggingface.cn 敲门 → huggingface.cn）。
+    其它一律视为「换了张无关证书」，不能拿来当 verifyHost。
     """
+    if san == host or host.endswith(f".{san}"):
+        return True
+    if sni and sni not in _DECOY_SNI:
+        return san == sni or san.endswith(f".{sni}") or sni.endswith(f".{san}")
+    return False
+
+
+def _pick_verify_host(host: str, sni: str, sans: list[str]) -> str | None:
+    """真实域名不在证书里时，挑一个有归属关系的名字；没有就不猜。"""
     if any(_match_name(host, san) for san in sans):
         return None
 
     exact = [san for san in sans if "*" not in san]
-    related = [san for san in exact if host.endswith(f".{san}")]
+    related = [san for san in exact if _related_name(host, sni, san)]
     if related:
         return max(related, key=len)
-    if exact:
-        return exact[0]
     return None
 
 
@@ -225,7 +242,7 @@ async def _probe_one(
         sans = _decode_sans(der)
         if not sans:
             return None, "no-probe"
-        verify_host = _pick_verify_host(probe_host, sans)
+        verify_host = _pick_verify_host(probe_host, sni, sans)
         if verify_host is None:
             return None, "ok"
         return verify_host, "mismatch"
